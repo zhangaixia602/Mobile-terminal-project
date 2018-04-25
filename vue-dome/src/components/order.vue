@@ -42,6 +42,7 @@
           flex: 1;
           text-align: center;
           color: #92a6eb;
+          cursor: pointer;
    }
    .router-link-exact-active{
           color:white;

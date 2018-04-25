@@ -46,6 +46,7 @@ li{
     text-align: center;
     padding: 1rem 0;
     border-bottom: 0.1rem solid #dedee6;
+    cursor: pointer;
 }
 .router-link-exact-active{
     color: #395cd4;

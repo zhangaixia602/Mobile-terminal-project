@@ -139,6 +139,7 @@ li i{
 .item div:first-of-type{
    color: #454545;
    margin-bottom:0.6rem;
+   cursor: pointer;
 }
 .item i{
    font-size:1rem;

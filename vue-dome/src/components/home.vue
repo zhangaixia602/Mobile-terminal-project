@@ -40,7 +40,7 @@
            </div>
        </div>
        <ul>
-          <router-link :to="item.path" tag='li' v-for='(item,index) in mainData' v-if='index>0' class="clearfix">
+          <router-link :to="item.path" tag='li' v-for='(item,index) in mainData' v-if='index>0 && index<6' class="clearfix">
               <div class="icon-box" :style="{backgroundColor:item.color}"><i :class="'icon iconfont icon-'+item.icon"></i></div>
               <div class="title">
                  <h3>{{item.title}}</h3>
@@ -161,6 +161,7 @@ export default {
      border-radius:0.3rem;
      margin-bottom:0.3rem;
      position:relative;
+     cursor: pointer;
    }
    li.clearfix:last-of-type{
        margin-bottom:0;

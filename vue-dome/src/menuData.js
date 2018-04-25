@@ -12,6 +12,7 @@ import OrderNumber from '@/components/order/orderNumber'
 import AreaDetails from '@/components/order/number/areaDetails'
 import SpecificationDetails from '@/components/order/number/specificationDetails'
 import CompanyDetails from '@/components/order/number/companyDetails'
+import ReportDetail from '@/components/report/reportDetail'
 
 const menuData=[
   {
@@ -117,6 +118,11 @@ const menuData=[
         component:CompanyDetails
       }
     ]
+  },
+  {
+    path: '/reportDetail/:id',
+    name: 'reportDetail',
+    component:ReportDetail
   }
 ];
 export default menuData

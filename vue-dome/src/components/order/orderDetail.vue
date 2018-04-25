@@ -1,6 +1,6 @@
 <template>
   <div  class='main'>
-       <Header firstIcon='arrow-left' title='订单详情' lastIcon='' backUrl='/order' v-on:child-tell-me-something="listenToMyBoy"></Header>
+       <Header firstIcon='arrow-left' title='订单详情' lastIcon='' backUrl='/order'></Header>
        <div class='body'>
             <ul>
                <li>
@@ -16,8 +16,8 @@
                        <label><i class="icon iconfont icon-dateselect blue"></i>商品货号</label>
                        <span></span>
                   </div>
-                   <router-link :to="'/orderNumber/'+orderNumber" tag='div'  class='item'>
-                        <label><i class="icon iconfont icon-material_tab gray"></i>{{text}}</label>
+                   <router-link :to="'/orderNumber/'+orderNumber" tag='div'  class='item active'>
+                        <label><i class="icon iconfont icon-material_tab gray"></i>订单数量</label>
                         <span>{{orderNumber}}</span>
                         <i class="icon iconfont icon-arrow-right"></i>
                    </router-link>
@@ -96,16 +96,10 @@ import Header from '../header.vue'
      name: 'OrderDetail',
      data(){
             return {
-              text:'',
               orderNumber:'345677'
             }
      },
-      components: { Header},
-       methods:{
-                    listenToMyBoy:function(message){
-                           this.text=message;
-                    }
-        },
+      components: { Header}
    }
 </script>
 <style   scoped>
@@ -158,6 +152,9 @@ label:after{
     -ms-flex-direction: row;
     flex-direction: row;
     position: relative;
+}
+.active{
+    cursor: pointer;
 }
 .item>div{
     -webkit-box-flex: 1;
