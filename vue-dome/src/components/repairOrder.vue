@@ -24,6 +24,7 @@
   </div>
 </template>
 <script>
+
    import Header from './header.vue'
    import '../assets/css/repairOrder.css'
    import ImgFigure from './repairOrder/imgFigure.vue'//图片组件
