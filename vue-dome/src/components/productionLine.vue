@@ -1,7 +1,7 @@
 <template>
   <div class='main'>
   <Header firstIcon='arrow-left' title='产线' lastIcon='' backUrl='/'></Header>
-   <p>{{text}}</p>
+  <p>{{text}}</p>
   </div>
 </template>
 <script>

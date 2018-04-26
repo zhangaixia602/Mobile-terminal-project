@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+    </head>
+    <body>
+
+    </body>
+    <script type="text/javascript" src="data/data.js"></script>
+    <script>
+        // 存放每一个工位点所在的工位中心数据
+        var pointStationCenterData = {};
+        pointTypeArray.forEach(function (item) {
+            var start = item[0];
+            var end = item[1];
+            var type = item[2];
+            while (start <= end) {
+                var tempID = "ID" + start;
+                pointStationCenterData[tempID] = typeNameData["type" + type];
+                start++;
+            }
+        });
+
+        mapPositionArray.forEach(function (item) {
+            var start = item[0];
+            var end = item[1];
+            var prefix = item[2];
+            var positionStart = item[3];
+            var method = item[4];
+            while (start <= end) {
+                var tempID = "ID" + start;
+                var tempItem = processData[tempID];
+                var tempStationCenter = pointStationCenterData[tempID];
+                var pointMapName = unusualData[tempID] || (prefix ? (prefix + positionStart) : "");
+                tempItem.stationName = pointMapName;
+                tempItem.stationCenter = tempStationCenter;
+                var tempMapData = {};
+                businessData.forEach(function (busItem) {
+                    if (regEqual(busItem.stationName,pointMapName) && busItem.stationCenter === tempStationCenter) {
+                        Object.assign(tempMapData, busItem);
+                    }
+                });
+                if (method === 'm') {
+                    positionStart--;
+                } else {
+                    positionStart++;
+                }
+                start++;
+                tempItem.data = tempMapData;
+            }
+        })
+
+        function regEqual(first,second) {
+            var firstMatchArray=first.match(/\w+\d+/);
+            var secondMatchArray=second.match(/\w+\d+/);
+            return firstMatchArray && secondMatchArray && firstMatchArray[0]===secondMatchArray[0]
+        }
+
+        console.log(processData);
+        console.log(JSON.stringify(processData));
+
+
+    </script>
+</html>

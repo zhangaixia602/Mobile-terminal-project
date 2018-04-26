@@ -8,6 +8,7 @@ html,body{
   font-size: 20px;
   width: 100%;
   height: 100%;
+  overflow: hidden;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -24,6 +25,7 @@ a{
   width: 100%;
   height:calc(100% - 71px - 4rem);
   box-sizing: border-box;
+  overflow: hidden;
 }
 .clearfix:after{
   display: block;

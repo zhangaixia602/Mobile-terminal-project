@@ -4,7 +4,7 @@
             <label>刷新开关</label>
             <span :class="flag ? 'active' : ''"  v-on:click='upDate'></span>
         </div>
-        <div v-if='popUp' class='container'>
+        <div :class="'container '+ (popUp ? ' translate' : '')">
             <div class='item'></div>
             <div class='item'>
                  <div>
@@ -124,10 +124,16 @@
 .container{
     position: absolute;
     top: 0;
-    left:0;
-    z-index:99;
-    width:100%;
-    display:flex;
+    transform: translateX(calc(100% + 0.5rem));
+    transition: all 0.5s ease;
+    z-index: 99;
+    width: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+.container.translate{
+    transform: translateX(0);
 }
 .item{
     -webkit-box-flex: 1;

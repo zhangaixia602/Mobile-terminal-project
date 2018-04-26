@@ -43,6 +43,7 @@ li{
      text-align: center;
      color:#adadad;
      font-size:0.7rem;
+      cursor: pointer;
 }
 .router-link-exact-active{
    color:#395cd4;

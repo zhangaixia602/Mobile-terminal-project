@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <style type="text/css">
+            html,body{
+                height: 100%;
+                width: 100%;
+            }
+            #container,#pic{
+                width: 1000px;
+                height: 708px;
+                position: relative;
+                background: silver;
+            }
+
+            img{
+                width: 100%;
+                height: 100%;
+            }
+
+            .point{
+                background-color: salmon;
+                position: absolute;
+                border-radius: 100%;
+                font-size: 12px;
+                transform: scale(0.2);
+                line-height: 60px;
+                text-align: center
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <div id="pic">
+                <img src="../process/assets/img/bg.png">
+            </div>
+        </div>
+        <div><button onclick="saveData()">保存</button></div>
+    </body>
+
+    <script type="text/javascript" src="../process/vendor/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="../process/vendor/jquery.panzoom/jquery.panzoom.js"></script>
+    <script type="text/javascript">
+        var pointSize=60;
+        var isDrawPoint=false;
+        var delay=200,clicks=0,timer=null;
+        var totalData=JSON.parse(localStorage.getItem('processData') || '{}');
+        var ignoreData=[];
+        var filterArray=[];
+        ignoreData.forEach(function (value) {
+            if(typeof  value ==='number'){
+                filterArray.push(value);
+            }else{
+                var tempStart=value[0];
+                var tempEnd=value[1];
+                while(tempStart<=tempEnd){
+                    filterArray.push(tempStart++);
+                }
+            }
+        })
+        console.log(filterArray);
+        var currentIndex=Object.keys(totalData).length+1;
+        var currentData=totalData;
+        $.each(currentData,function (key,value) {
+            bindPoint(value);
+        });
+        var $panzoom = $('#pic').panzoom({
+            contain: 'automatic',
+            onEnd:function () {
+                isDrawPoint=!arguments[3];
+            }
+        }).click(function (e) {
+            clicks++;
+            if(clicks===1){
+                timer=setTimeout(function () {
+                    clicks=0;
+                    if(isDrawPoint){
+                        var eleX=e.offsetX-pointSize/2;
+                        var eleY=e.offsetY-pointSize/2;
+                        var tempID='ID'+(currentIndex++);
+                        var tempPoint={x:eleX,y:eleY,id:tempID,type:1};
+                        currentData[tempID]=tempPoint;
+                        bindPoint(tempPoint);
+                    }
+                },delay);
+            }else{
+                clearTimeout(timer);
+                clicks=0;
+            }
+        }).dblclick(function () {
+            $panzoom.panzoom("reset");
+        });
+        $('#container').on('mousewheel.focal', function( e ) {
+            e.preventDefault();
+            var delta = e.delta || e.originalEvent.wheelDelta;
+            var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
+            $panzoom.panzoom('zoom', zoomOut, {
+                animate: false,
+                focal: e
+            });
+        });
+        function bindPoint(pointData) {
+            if(filterPoint(pointData.id)){
+                $('<div class="point">'+pointData.id+';'+pointData.type+'</div>').css({
+                    left:pointData.x+'px',
+                    top:pointData.y+'px',
+                    width:pointSize+'px',
+                    height:pointSize+'px'
+                }).click(function () {
+                    $(this).remove();
+                    currentIndex--;
+                    return false;
+                }).appendTo('#pic');
+            }
+        }
+
+        function filterPoint(pointID) {
+            var tempID =parseInt(pointID.substr(2));
+            return $.inArray(tempID,filterArray)===-1;
+
+        }
+
+        function saveData() {
+            localStorage.setItem('processData',JSON.stringify(currentData));
+        }
+    </script>
+</html>

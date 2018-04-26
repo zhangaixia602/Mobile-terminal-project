@@ -1,0 +1,9 @@
+{
+  "Result": "OK",
+  "Records":[
+    {"factory":"1000300","lineState":"blocking","station":"ID1","section":"1000413","workCenter":"1000300"},
+    {"factory":"1000300","lineState":"open","station":"ID5","section":"1000413","workCenter":"1000300"},
+    {"factory":"1000300","lineState":"congestion","station":"ID4","section":"1000413","workCenter":"1000300"}
+  ],
+  "message":"保存失败!"
+}
