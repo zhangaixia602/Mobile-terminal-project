@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>工序流</title>
+    <style>
+        * {
+            font-size: 0.7rem;
+            color: #969aa6;
+            box-sizing: border-box;
+            font-family: Arial, '微软雅黑 Light';
+        }
+
+        ul, li {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        html, body {
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .craft-page-title {
+            width: 100%;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            padding-bottom: 10px;
+        }
+
+        .craft-pop {
+            position: absolute;
+            width: 370px;
+            border: 1px solid silver;
+            right: 0px;
+            top: 45px;
+            background-color: white;
+            transition: all 0.4s ease;
+            overflow: hidden;
+            min-height: 35px;
+        }
+
+        .craft-pop-header {
+            padding: 7px 10px;
+            background: #11a8ab;
+            color: white;
+            font-size: 14px;
+            position: absolute;
+            top: 0px;
+            z-index: 10;
+            width: 100%;
+            cursor: move;
+        }
+
+        .craft-pop-header .fa {
+            position: absolute;
+            right: 10px;
+            font-size: 20px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            padding: 0px;
+        }
+
+        .craft-pop-header .fa.toggle {
+            transform: rotate(-180deg);
+        }
+
+        .craft-main .mCSB_container {
+            margin-bottom: 0px !important;
+        }
+
+        .craft-main .craft-flow-item {
+            margin-bottom: 10px;
+            border: 1px solid silver
+        }
+
+        .craft-pop .fa {
+            opacity: 0.8;
+        }
+
+        .craft-pop .fa:hover {
+            opacity: 1;
+        }
+
+        .craft-pop-item-content {
+            height: 450px;
+            position: relative;
+            transition: all 0.4s ease;
+            background-color: white;
+            margin-top: 37px;
+        }
+
+        .craft-pop-item-content.toggle {
+            margin-top: -450px;
+        }
+
+        .craft-pop-item {
+            height: 100%;
+            position: absolute;
+            width: 100%;
+        }
+
+        .craft-pop-chose {
+            transform: translateX(100%);
+            transition: all 0.4s ease;
+            background: white;
+            padding: 5px 10px;
+            height: calc(100% - 37px);
+        }
+
+        .craft-pop-chose.toggle {
+            transform: translateX(0);
+        }
+
+        .craft-flow-item-title {
+            padding: 5px;
+            text-align: center;
+            background: #232940;
+            color: white;
+        }
+
+        .craft-pop-control-content {
+            padding-bottom: 5px;
+        }
+
+        .craft-pop-control-content .fa {
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .craft-pop-control-content .fa-arrow-circle-left {
+            color: silver;
+        }
+
+        .craft-pop-control-content .fa-refresh {
+            color: blue;
+        }
+
+        .craft-pop-control-content .fa-check-circle {
+            color: green;
+        }
+
+        .craft-procedure-content {
+            padding: 7px;
+        }
+
+        .craft-procedure-icon {
+            width: 32px !important;
+            font-size: 18px;
+            line-height: 300px;
+            padding: 5px;
+        }
+
+        .craft-procedure-content > div {
+            float: left;
+            width: 150px;
+            height: 300px;
+        }
+
+        .craft-procedure-selectable {
+
+        }
+
+        .craft-procedure-selected {
+
+        }
+
+        .craft-li-content .mCSB_scrollTools {
+            height: 12px;
+        }
+
+        .craft-data-content .tab-content {
+            padding: 5px;
+        }
+
+        .craft-data-content .tab-content .tab-pane {
+            border-radius: 5px;
+        }
+
+        .craft-procedure-title {
+            background: #0367a8;
+            color: white;
+            padding: 5px 10px;
+        }
+
+        .craft-group-content {
+            position: absolute;
+            border: 2px dashed #1998ea;
+        }
+
+        .craft-group-zh .craft-group-title {
+            bottom: 0;
+        }
+
+        .craft-group-title {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #1998ea;
+            position: absolute;
+            width: 100%;
+            padding: 1rem 0;
+            font-weight: bold;
+        }
+
+        .craft-flow-item select {
+            width: 100%;
+            color: black;
+        }
+
+        .craft-flow-item .selectize-control {
+            line-height: 100%;
+            margin: 7px 7px 0px;
+        }
+
+        .craft-flow-item .selectize-input {
+            padding: 4px 5px;
+        }
+
+        .craft-flow-item .selectize-control,
+        .craft-flow-item .selectize-dropdown,
+        .craft-flow-item .selectize-input,
+        .craft-flow-item .selectize-input input {
+            font-size: 12px;
+        }
+
+        .craft-flow-item > div input {
+            margin-bottom: 5px;
+            width: 100%;
+            padding: 2px 5px;
+            border: 1px solid silver;
+        }
+
+        .craft-data-content {
+            height: calc(100% - 29px);
+        }
+
+        .craft-procedure-content .craft-procedure-select-content {
+            border: 1px solid silver;
+            height: 245px;
+            overflow: hidden;
+        }
+
+        .craft-procedure-content ul {
+            counter-reset: sectionCounter;
+        }
+
+        .craft-procedure-content ul li {
+            padding: 5px 25px 5px 15px;
+            cursor: pointer;
+            position: relative;
+            /* overflow: hidden; */
+            /* white-space: nowrap; */
+            /* text-overflow: ellipsis; */
+            text-indent: -10px;
+        }
+
+        .craft-procedure-content .craft-procedure-selectable ul li,
+        .craft-pop-chose ul li {
+            padding-right: 15px;
+        }
+
+        .craft-procedure-content ul li.toggle {
+            display: none;
+        }
+
+        .craft-procedure-content ul li:hover {
+            background-color: #00c7f6 !important;
+            color: white;
+        }
+
+        .craft-has-relation {
+            background-color: sienna !important;
+            color: white;
+        }
+
+        .craft-procedure-content ul li:before {
+            content: counter(sectionCounter) '.';
+            counter-increment: sectionCounter;
+        }
+
+        .craft-procedure-content ul li:nth-child(2n+1) {
+            background-color: #eeedeb;
+        }
+
+        .craft-procedure-content ul li .fa-link {
+            right: 10px;
+            bottom: 6px;
+            position: absolute;
+            color: #00c7f6;
+            opacity: 0.8;
+        }
+
+        .craft-pop-chose ul li .fa-link {
+            display: none;
+        }
+
+        .craft-procedure-content ul li .fa-link:hover {
+            opacity: 1;
+        }
+
+        .craft-procedure-content ul li:hover .fa-link {
+            color: white;
+        }
+
+        .craft-flow-item .mCSB_inside > .mCSB_container {
+            margin-right: 0px;
+        }
+
+        .craft-pop-footer {
+            padding: 5px 10px 0px 0px;
+            text-align: right;
+            border-top: 1px solid silver;
+        }
+
+        /*流程图相关*/
+        .craft-main {
+            position: relative;
+            height: calc(100% - 2.3rem);
+            width: 100%;
+            overflow: hidden;
+            background-color: #f0f4f7;
+        }
+
+        .craft-map {
+            height: 100%;
+            overflow: hidden;
+            float: left;
+            width: calc(100% - 15rem);
+        }
+
+        .craft-canvas {
+            min-height: 100%;
+            min-width: 100%;
+            overflow: hidden;
+            transform-origin: 0px 0px;
+            position: relative;
+        }
+
+        .table-data {
+            height: calc(100% - 3.7rem);
+            overflow: auto;
+            padding-left: 0.2rem;
+        }
+
+        .craft-station {
+            height: calc(100% - 1rem);
+            overflow: hidden;
+            float: left;
+            width: 14rem;
+            margin: 0.5rem;
+            background-color: white;
+            border-radius: 5px;
+        }
+
+        .craft-station table {
+            width: 100%;
+        }
+
+        .craft-station table caption {
+            text-align: left;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 0.5rem;
+        }
+
+        .craft-station table thead {
+            background-color: #1898ea;
+        }
+
+        .craft-station table tbody tr:nth-child(2n) {
+            background-color: #f0f4f7;
+        }
+
+        .craft-station table td,
+        .craft-station table th {
+            text-align: center;
+            padding: 0.3rem;
+        }
+
+        .craft-station table th {
+            color: white;
+        }
+
+        .craft-node {
+            position: absolute;
+            background-color: #1898ea;
+            border-radius: 5px;
+            padding: 0.2rem;
+            width: 15rem;
+            height: 4rem;
+            z-index: 999;
+        }
+
+        .craft-line {
+            width: 4px;
+            height: 4px;
+            background-color: #4b95cc;
+            position: absolute;
+        }
+
+        .craft-line-end {
+            position: absolute;
+            border: 6px solid #4b95cc;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            border-top-width: 16px;
+            border-bottom: none;
+        }
+
+        .craft-line-left {
+            position: absolute;
+            border: 6px solid #4b95cc;
+            border-top-color: transparent;
+            border-bottom-color: transparent;
+            border-right-width: 16px;
+            border-left: none;
+        }
+
+        .craft-node-bottom-line:after {
+            content: '';
+            position: absolute;
+            height: 2rem;
+            width: 4px;
+            background-color: #1898ea;
+            left: 50%;
+            bottom: -1.8rem;
+        }
+
+        .craft-node-bottom-line:before {
+            content: '';
+            position: absolute;
+            border: 6px solid #1898ea;
+            border-bottom: none;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            left: calc(50% - 4px);
+            bottom: -2rem;
+        }
+
+        .craft-node-left-line:after {
+            content: '';
+            position: absolute;
+            height: 4px;
+            width: 4.8rem;
+            background-color: #1898ea;
+            right: -4.8rem;
+            top: 2rem;
+        }
+
+        .craft-node-left-line:before {
+            content: '';
+            position: absolute;
+            border: 6px solid #1898ea;
+            border-right: none;
+            border-top-color: transparent;
+            border-bottom-color: transparent;
+            right: calc(-5rem - 0px);
+            top: calc(2rem - 4px);
+        }
+
+        .craft-arrow-down:after {
+            content: '';
+            position: absolute;
+            border: 6px solid silver;
+            border-bottom: none;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            bottom: -2px;
+            left: -4px;
+        }
+
+        .craft-arrow-left:after {
+            content: '';
+            position: absolute;
+            border: 6px solid silver;
+            border-left: none;
+            border-top-color: transparent;
+            border-bottom-color: transparent;
+            bottom: -4px;
+            left: -4px;
+        }
+
+        .craft-arrow-right:after {
+            content: '';
+            position: absolute;
+            border: 6px solid silver;
+            border-right: none;
+            border-top-color: transparent;
+            border-bottom-color: transparent;
+            bottom: -4px;
+            right: -4px;
+        }
+
+        .craft-node * {
+            color: white;
+            font-size: 0.6rem;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        .craft-icon {
+            font-size: 3rem !important;
+            background-color: white;
+            color: #1898ea;
+            border-radius: 5px 0 0 5px;
+            padding: 0 0.5rem;
+            display: inline-block;
+        }
+
+        .craft-node ul {
+            padding: 0.2rem 0.5rem;
+            display: inline-block;
+            width: 10rem;
+        }
+
+        .craft-node ul li {
+            line-height: 1rem;
+        }
+
+        .craft-edit {
+            position: absolute;
+            top: 0.4rem;
+            right: 0.4rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .craft-edit:hover {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<script type="text/javascript" src="plugin/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="plugin/underscore-1.7.0.min.js"></script>
+<body>
+<div class="flowmap-page page-no-space" style="height: 100%">
+    <div class="craft-main">
+        <div class="craft-map">
+            <div class="craft-canvas"></div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var craftData =
+        {
+            "relationUrl": "/mes-master2/fpm!ajaxffps.action",
+            "saveUrl": "/mes-master2/fpm!ajaxsfp.action",
+            "saveParams": {},
+            "validateUrl": "/mes-master2/fpm!ajaxvfd.action",
+            "mapData": {
+                "styleNo": "MTL-01",
+                "styleName": "中山装",
+                "productAssemblyGroups": [
+                    {
+                        "assemblyCode": "1000100",
+                        "assemblyName": "组合",
+                        "operations": [
+                            {
+                                "operationId": "1000011",
+                                "operationNo": "11",
+                                "operationName": "缝制工序8",
+                                "standardSMV": "11",
+                                "operationOrder": "11"
+                            },
+                            {
+                                "operationId": "1000003",
+                                "operationNo": "3",
+                                "operationName": "22",
+                                "standardSMV": "10",
+                                "operationOrder": "3"
+                            },
+                            {
+                                "operationId": "1000020",
+                                "operationNo": "20",
+                                "operationName": "缝制工序20",
+                                "standardSMV": "20",
+                                "operationOrder": "20"
+                            },
+                            {
+                                "operationId": "1000001",
+                                "operationNo": "1",
+                                "operationName": "裁剪",
+                                "standardSMV": "10",
+                                "operationOrder": "1"
+                            },
+                            {
+                                "operationId": "1000021",
+                                "operationNo": "21",
+                                "operationName": "缝制工序21",
+                                "standardSMV": "21",
+                                "operationOrder": "21"
+                            },{
+                                "operationId": "1000002",
+                                "operationNo": "2",
+                                "operationName": "xxx",
+                                "standardSMV": "10",
+                                "operationOrder": "2"
+                            }
+                        ]
+                    },
+                    {
+                        "assemblyCode": "1000151",
+                        "assemblyName": "前片",
+                        "operations": [
+                            {
+                                "operationId": "1000007",
+                                "operationNo": "7",
+                                "operationName": "缝制工序4",
+                                "standardSMV": "10",
+                                "operationOrder": "7"
+                            },
+                            {
+                                "operationId": "1000008",
+                                "operationNo": "8",
+                                "operationName": "缝制工序5",
+                                "standardSMV": "10",
+                                "operationOrder": "8"
+                            },
+                            {
+                                "operationId": "1000006",
+                                "operationNo": "6",
+                                "operationName": "缝制工序3",
+                                "standardSMV": "10",
+                                "operationOrder": "6"
+                            },
+                            {
+                                "operationId": "1000022",
+                                "operationNo": "22",
+                                "operationName": "缝制工序22",
+                                "standardSMV": "22",
+                                "operationOrder": "22"
+                            },
+                            {
+                                "operationId": "1000023",
+                                "operationNo": "23",
+                                "operationName": "缝制工序23",
+                                "standardSMV": "23",
+                                "operationOrder": "23"
+                            }
+                        ]
+                    },
+                    {
+                        "assemblyCode": "1000152",
+                        "assemblyName": "领子",
+                        "operations": [
+                            {
+                                "operationId": "1000018",
+                                "operationNo": "18",
+                                "operationName": "缝制工序18",
+                                "standardSMV": "18",
+                                "operationOrder": "18"
+                            },
+                            {
+                                "operationId": "1000009",
+                                "operationNo": "9",
+                                "operationName": "缝制工序6",
+                                "standardSMV": "10",
+                                "operationOrder": "9"
+                            },
+                            {
+                                "operationId": "1000010",
+                                "operationNo": "10",
+                                "operationName": "缝制工序7",
+                                "standardSMV": "10",
+                                "operationOrder": "10"
+                            },
+                            {
+                                "operationId": "1000019",
+                                "operationNo": "19",
+                                "operationName": "缝制工序19",
+                                "standardSMV": "19",
+                                "operationOrder": "19"
+                            }
+                        ]
+                    },
+                    {
+                        "assemblyCode": "1000153",
+                        "assemblyName": "后片",
+                        "operations": [
+                            {
+                                "operationId": "1000013",
+                                "operationNo": "13",
+                                "operationName": "缝制工序13",
+                                "standardSMV": "12",
+                                "operationOrder": "13"
+                            },
+                            {
+                                "operationId": "1000014",
+                                "operationNo": "14",
+                                "operationName": "缝制工序14",
+                                "standardSMV": "11",
+                                "operationOrder": "14"
+                            },
+                            {
+                                "operationId": "1000012",
+                                "operationNo": "12",
+                                "operationName": "缝制工序12",
+                                "standardSMV": "11",
+                                "operationOrder": "12"
+                            }
+                        ]
+                    },
+                    {
+                        "assemblyCode": "1000154",
+                        "assemblyName": "挂面",
+                        "operations": [
+                            {
+                                "operationId": "1000016",
+                                "operationNo": "16",
+                                "operationName": "缝制工序16",
+                                "standardSMV": "16",
+                                "operationOrder": "16"
+                            },
+                            {
+                                "operationId": "1000017",
+                                "operationNo": "17",
+                                "operationName": "缝制工序17",
+                                "standardSMV": "17",
+                                "operationOrder": "17"
+                            },
+                            {
+                                "operationId": "1000015",
+                                "operationNo": "15",
+                                "operationName": "缝制工序15",
+                                "standardSMV": "15",
+                                "operationOrder": "15"
+                            }
+                        ]
+                    },
+                    {
+                        "assemblyCode": "1000150",
+                        "assemblyName": "袖子",
+                        "operations": [
+                            {
+                                "operationId": "1000005",
+                                "operationNo": "5",
+                                "operationName": "缝制工序2",
+                                "standardSMV": "10",
+                                "operationOrder": "5"
+                            },
+                            {
+                                "operationId": "1000004",
+                                "operationNo": "4",
+                                "operationName": "缝制工序1",
+                                "standardSMV": "10",
+                                "operationOrder": "4"
+                            }
+                        ]
+                    }
+                ],
+                "operationConnects": [
+                    {
+                        "start": "",
+                        "end": "12"
+                    },
+                    {
+                        "start": "12",
+                        "end": "13"
+                    },
+                    {
+                        "start": "13",
+                        "end": "14"
+                    },
+                    {
+                        "start": "",
+                        "end": "4"
+                    },
+                    {
+                        "start": "4",
+                        "end": "5"
+                    },
+                    {
+                        "start": "",
+                        "end": "9"
+                    },
+                    {
+                        "start": "9",
+                        "end": "10"
+                    },
+                    {
+                        "start": "10",
+                        "end": "18"
+                    },
+                    {
+                        "start": "18",
+                        "end": "19"
+                    },
+                    {
+                        "start": "14",
+                        "end": "6"
+                    },
+                    {
+                        "start": "6",
+                        "end": "7"
+                    },
+                    {
+                        "start": "7",
+                        "end": "8"
+                    },
+                    {
+                        "start": "8",
+                        "end": "22"
+                    },
+                    {
+                        "start": "22",
+                        "end": "23"
+                    },
+                    {
+                        "start": "5",
+                        "end": "15"
+                    },
+                    {
+                        "start": "19",
+                        "end": "15"
+                    },
+                    {
+                        "start": "15",
+                        "end": "16"
+                    },
+                    {
+                        "start": "16",
+                        "end": "17"
+                    },
+                    {
+                        "start": "23",
+                        "end": "1"
+                    },
+                    {
+                        "start": "17",
+                        "end": "1"
+                    },
+                    {
+                        "start": "1",
+                        "end": "2"
+                    },
+                    {
+                        "start": "2",
+                        "end": "3"
+                    },
+                    {
+                        "start": "3",
+                        "end": "11"
+                    },
+                    {
+                        "start": "11",
+                        "end": "20"
+                    },
+                    {
+                        "start": "20",
+                        "end": "21"
+                    }
+                ]
+            },
+            "initData": [],
+            "render": {}
+        };
+        // 按照UMD通用模块的定义规范，定义模块
+        (function (root, factory) {
+            if (typeof define === 'function' && define.amd) {
+                // AMD
+                define(['jquery', 'underscore'], factory);
+            } else if (typeof exports === 'object') {
+                // Node, CommonJS之类的
+                module.exports = factory(require('jquery'), require('underscore'));
+            } else {
+                // 浏览器全局变量(root 即 window)
+                root.flowMap = factory(root.jQuery, root._);
+            }
+        }(this || (typeof window !== 'undefined' ? window : global), function ($, _) {
+            window.requestAnimFrame = (function () {
+                return window.requestAnimationFrame ||
+                        window.webkitRequestAnimationFrame ||
+                        window.mozRequestAnimationFrame ||
+                        function (callback) {
+                            window.setTimeout(callback, 1000 / 60);
+                        };
+            })();
+
+            var offsetWidth = 15;
+            var offsetHeight = 4;
+            var nodeSpaceX = 5;
+            var nodeSpaceY = 2;
+            var mapData;
+            var sidewards = false;
+            var mapGroupArray;
+            var mapConnectArray;
+            var appStartNode = null;
+            var appStartNodeX = 3;
+            var appStartNodeY = 5;
+            var childrenCount = 0;
+            var lineSpaceY = 2;
+            var startNodeArray = [];
+            var endNodeArray = [];
+            var nodePositionData = {};
+            var rootLineArray = null;
+            var $canvas;
+            var $mapContainer;
+            var maxLevel = 0;
+            var groupLevelData = {};
+
+
+            var containerWidth;
+            var containerHeight;
+            var canvasWidth = 0;
+            var canvasHeight = 0;
+            var groupMaxLength = 0;
+            var groupLength = 0;
+            var groupStart = 1;
+            var preOffsetX = 0;
+
+
+            var id = 'operationNo';
+            var title = 'operationName';
+            var craftTime = 'standardSMV';
+            var craftsKey = 'operations';
+
+            //图形变换需要的参数
+            var startDrag = false;
+            var startX = 0;
+            var startY = 0;
+
+            var startTranslateX = 0;
+            var startTranslateY = 0;
+
+            var containerOffset;
+//            var lineColorArray = ['red', 'yellow', 'green', 'silver', 'black', 'gray'];
+
+            var transformData = {
+                scale: 1,
+                translateX: 0,
+                translateY: 0
+            };
+
+            // 初始化数据
+            function init(craftData) {
+                initParams(craftData);
+                initMap();
+                initHandle();
+            }
+
+            //把每一个group里面的数据排序,并剔除group之间的那条线
+            function initCraftData(craftData){
+                var groupLine=[];
+                var startPointArray=[];
+                var groupArray=[],firstProcesses={};
+                var productAssemblyGroups=craftData.mapData.productAssemblyGroups;
+                var operationConnects=craftData.mapData.operationConnects;
+                $.each(operationConnects,function(index,item){
+                    $(productAssemblyGroups).each(function(){
+                        var operations=this.operations;
+                        var operationNo=[];
+                        for(var i=0; i<operations.length;i++){
+                            operationNo.push(operations[i].operationNo)
+                        }
+                        if(operationNo.indexOf(item.start)>-1 && operationNo.indexOf(item.end)==-1){
+                            groupLine.push(item)
+                        }
+                        if(operationNo.indexOf(item.end)>-1 && operationNo.indexOf(item.start)==-1){
+                            startPointArray.push(item.end)
+                        }
+                    })
+                });
+                function unique(arr){
+                    var tmp = new Array();
+                    for(var j in arr){
+                        if(tmp.indexOf(arr[j])==-1){
+                            tmp.push(arr[j]);
+                        }
+                    }
+                    return tmp;
+                }
+                console.log(startPointArray);
+                startPointArray=unique(startPointArray);//把数据去重
+                console.log(startPointArray);
+                console.log(groupLine);
+                productAssemblyGroups.forEach(function(item){
+                    var itemOperations=item.operations;
+                    var productionProcesses={
+                        assemblyCode:item.assemblyCode,
+                        assemblyName:item.assemblyName,
+                        operations:[]
+                    };
+                    //找到group里面的第一个工序
+                    function initFirstProcesses(){
+                        $(itemOperations).each(function(){
+                            if(startPointArray.indexOf(this.operationNo)>-1){
+                                firstProcesses=this;
+                                console.log(firstProcesses);
+                                productionProcesses.operations.push(firstProcesses)
+                            }
+                        })
+                    }
+
+                    function initProcesses(firstProcesses){
+                        var childProcesses={},childStart;
+                        operationConnects.forEach(function(item){
+                            if(item.start==firstProcesses.operationNo){
+                               childStart=item.end
+                            }
+                        });
+                        if(childStart){
+                            $(itemOperations).each(function(){
+                                if(this.operationNo==childStart){
+                                    childProcesses=this;
+                                    console.log(childProcesses);
+                                    productionProcesses.operations.push(childProcesses)
+                                }
+                            });
+                        }else{
+                            return false
+                        }
+                        //递归的调用
+                        initProcesses(childProcesses)
+                    }
+                    initFirstProcesses();
+                    initProcesses(firstProcesses);
+                    groupArray.push(productionProcesses)
+                });
+                console.log(groupArray);
+                return {
+                    "styleNo":craftData.mapData.styleNo,
+                    "styleName":craftData.mapData.styleName,
+                    "productAssemblyGroups":groupArray,
+                    "operationConnects":groupLine
+                }
+            }
+
+            function initParams(craftData) {
+                mapData = initCraftData(craftData);
+                mapGroupArray = mapData.productAssemblyGroups;
+                mapConnectArray = mapData.operationConnects || [];
+                $canvas = $('.craft-canvas');
+                $mapContainer = $('.craft-map');
+                groupLength = mapGroupArray.length;
+                containerWidth = $mapContainer.width();
+                containerHeight = $mapContainer.height();
+                containerOffset = $mapContainer.offset();
+                if (sidewards) {
+                    preOffsetX = (offsetWidth - 2) / groupLength;
+                } else {
+                    preOffsetX = offsetHeight / groupLength;
+                }
+                // 重新分类流程节点
+                (function () {
+                    mapConnectArray.forEach(function (item) {
+                        startNodeArray.push(item.start);
+                        endNodeArray.push(item.end);
+                    })
+                })();
+
+                // 初始化组的层级
+                function initAppStartGroup() {
+                    $.each(mapGroupArray, function (index, groupItem) {
+                        var craftArray = groupItem[craftsKey];
+                        var groupStartNode = craftArray[0];
+                        var groupEndNode = craftArray[craftArray.length - 1];
+                        if ($.inArray(groupStartNode[id], endNodeArray) > -1 && $.inArray(groupEndNode[id], startNodeArray) == -1) {
+                            groupItem.level = 0;
+                            appStartGroup = groupItem;
+                            groupLevelData['level0'] = {
+                                groupMaxLength: groupItem[craftsKey].length,
+                                finishChildrenCount: 0,
+                                groupArray: [groupItem]
+                            };
+                            return false;
+                        }
+                    });
+                }
+
+                // 初始化所有组的层级
+                function initGroupLevel(currentGroup) {
+                    var craftArray = currentGroup[craftsKey];
+                    var groupStartNode = craftArray[0];
+                    $.each(mapConnectArray, function (index, connectItem) {
+                        var connectItemEndID = connectItem.end;
+                        if (connectItemEndID == groupStartNode[id]) {
+                            var connectItemStartGroup = getGroupByStartID(connectItem.start);
+                            if (connectItemStartGroup) {
+                                connectItemStartGroup.level = currentGroup.level + 1;
+                                maxLevel = Math.max(maxLevel, connectItemStartGroup.level);
+                                // 初始化层级数据，包括最大高度
+                                var currentLevelData = groupLevelData['level' + connectItemStartGroup.level];
+                                if (!currentLevelData) {
+                                    groupLevelData['level' + connectItemStartGroup.level] = {};
+                                    currentLevelData = groupLevelData['level' + connectItemStartGroup.level];
+                                    currentLevelData.groupMaxLength = 0;
+                                    currentLevelData.finishChildrenCount = 0;
+                                    currentLevelData.groupArray = [];
+                                }
+                                currentLevelData.groupMaxLength = Math.max(currentLevelData.groupMaxLength, connectItemStartGroup[craftsKey].length);
+                                currentLevelData.groupArray.push(connectItemStartGroup);
+                                // 递归调用，初始化组数据
+                                initGroupLevel(connectItemStartGroup);
+                            }
+                        }
+                    })
+                }
+
+                // 根据startID获取对应的组
+                function getGroupByStartID(startID) {
+                    var result;
+                    $.each(mapGroupArray, function (index, groupItem) {
+                        var craftArray = groupItem[craftsKey];
+                        var groupEndNode = craftArray[craftArray.length - 1];
+                        if (groupEndNode[id] == startID) {
+                            result = groupItem;
+                            return false;
+                        }
+                    });
+                    return result;
+                }
+
+                initAppStartGroup();
+                initGroupLevel(appStartGroup);
+            }
+
+            function initMap() {
+
+                for (var e = maxLevel; e >= 0; e--) {
+                    var currentLevelData = groupLevelData['level' + e];
+                    var currentLevelGroup = currentLevelData.groupArray;
+                    _.each(currentLevelGroup, function (item) {
+                        var tempCraftArray = item.operations;
+                        // 初始化每一个group的起始点及获取流程图的起始节点
+                        if (tempCraftArray && tempCraftArray.length) {
+                            var tempFirstNode = tempCraftArray[0];
+                            var tempNodeX = currentLevelData.finishChildrenCount;
+                            var tempNodeY=0;
+                            var tempE=maxLevel-e;
+                            while(tempE>0){
+                                tempNodeY+=(groupLevelData['level'+(e+tempE)].groupMaxLength+1);
+                                tempE--;
+                            }
+                            tempFirstNode.y = tempNodeY;
+                            tempFirstNode.x = tempNodeX;
+                            currentLevelData.finishChildrenCount++;
+                        }
+                        //绘制流程图
+                        var tempFirstCraft = tempCraftArray[0];
+                        var startX = tempFirstCraft.x + (maxLevel-e) / 2;
+                        var startY = tempFirstCraft.y;
+                        tempCraftArray.forEach(function (craftData, index) {
+                            var nodeClassName = 'craft-node-bottom-line';
+                            var craftNodeID = craftData[id];
+                            var craftNodeTitle = craftData[title];
+                            var craftNodeTime = craftData[craftTime];
+                            var craftOffsetX = startX * (offsetWidth + nodeSpaceX) + appStartNodeX;
+                            var craftOffsetY = (startY + index) * (offsetHeight + nodeSpaceY) + appStartNodeY;
+                            canvasHeight = Math.max(canvasHeight, craftOffsetY + offsetHeight);
+                            canvasWidth = Math.max(canvasWidth, craftOffsetX + offsetWidth);
+                            var $craftNode = $('<div class="craft-node">\
+                                    <span class="craft-icon">' + craftData.operationNo + '</span>\
+                                    <ul class="colon-suffix">\
+                                        <li><label>NO</label><span>' + craftNodeID + '</span></li>\
+                                        <li><span>' + craftNodeTitle + '</span></li>\
+                                        <li><label>工时</label><span>' + craftNodeTime + '天</span></li>\
+                                    </ul>\
+                                </div>').appendTo($canvas).css({
+                                'transform': 'translate3d(' + craftOffsetX + 'rem,' + craftOffsetY + 'rem,0rem)'
+                            });
+                            if (index < tempCraftArray.length - 1) {
+                                $craftNode.addClass(nodeClassName);
+                            }
+                            nodePositionData[craftNodeID] = {x: craftOffsetX, y: craftOffsetY};
+                        });
+                        drawGroupContent(nodePositionData[tempFirstCraft[id]], tempCraftArray.length, item.assemblyName);
+
+                    });
+                }
+
+                function getCountInArray(nodeID, array) {
+                    var count = 0;
+                    array.forEach(function (item) {
+                        count += (item == nodeID) ? 1 : 0;
+                    });
+                    return count;
+                }
+
+
+                mapConnectArray.forEach(function (itemData) {
+                    drawLine(itemData.start, itemData.end);
+                });
+
+                $canvas.css({
+                    height: canvasHeight + 2 * nodeSpaceY + 'rem',
+                    width: canvasWidth + 2 * nodeSpaceX + 'rem'
+                });
+            }
+
+            function initHandle() {
+                $mapContainer.bind('mousewheel DOMMouseScroll', function (event) {
+                    var orgEvent = event.originalEvent;
+                    var orgX = orgEvent.clientX - containerOffset.left;
+                    var orgY = orgEvent.clientY - containerOffset.top;
+                    var wheelData = orgEvent.wheelDelta || -orgEvent.detail * 40;
+                    var oldScale = transformData.scale;
+                    var newScale = oldScale * Math.exp(wheelData * 0.3 / 120);
+                    transformData.translateX = (orgX / newScale - orgX / oldScale) * newScale;
+                    transformData.translateY = (orgY / newScale - orgY / oldScale) * newScale;
+                    transformData.scale = newScale;
+                    //console.log(orgX);
+                    updateCanvas();
+                    startTranslateX += transformData.translateX / transformData.scale;
+                    startTranslateY += transformData.translateY / transformData.scale;
+                });
+                $mapContainer.bind('mousedown', function (event) {
+                    startDrag = true;
+                    startX = event.clientX;
+                    startY = event.clientY;
+                });
+                $mapContainer.bind('mousemove', function (event) {
+                    if (startDrag) {
+                        var orgEvent = event.originalEvent;
+                        transformData.translateX = orgEvent.clientX - startX;
+                        transformData.translateY = orgEvent.clientY - startY;
+                        updateCanvas();
+                    }
+                });
+                $mapContainer.bind('mouseup', function () {
+                    startDrag = false;
+                    startTranslateX += transformData.translateX / transformData.scale;
+                    startTranslateY += transformData.translateY / transformData.scale;
+                    transformData.translateX = 0;
+                    transformData.translateY = 0;
+                });
+                var canvasHeightPX = $canvas.height();
+                var canvasWidthPX = $canvas.width();
+                var defaultScale = Math.min(containerWidth / canvasWidthPX, containerHeight / canvasHeightPX);
+                var defaultTranslateX = (containerWidth - canvasWidthPX * defaultScale) / 2 / defaultScale;
+                var defaultTranslateY = (containerHeight - canvasHeightPX * defaultScale) / 2 / defaultScale;
+                transformData.scale = defaultScale;
+                startTranslateX = defaultTranslateX;
+                startTranslateY = defaultTranslateY;
+                setTimeout(function () {
+                    updateCanvas();
+                }, 100);
+
+            }
+
+            function drawLine(startID, endID) {
+                var startPos = nodePositionData[startID];
+                var endPos = nodePositionData[endID];
+                if (startPos && endPos) {
+                    var startX = startPos.x + offsetWidth / 2;
+                    var startY = startPos.y + offsetHeight - nodeSpaceY;
+//                    var lineColor = lineColorArray[groupStart % (lineColorArray.length - 1)];
+                    var endX = endPos.x + offsetWidth / 2;
+                    var endY = endPos.y;
+                    var middleY = endY - nodeSpaceY * 5 / 2;
+                    var lineStartHeight = middleY - startY - nodeSpaceY;
+                    var lineMiddleWidth = Math.abs(endX - startX);
+                    var lineEndHeight = endY - middleY;
+                    var $lineStart = $('<div class="craft-line"></div>');
+                    var $lineMiddle = $('<div class="craft-line"></div>');
+                    var $lineEnd = $('<div class="craft-line"></div>');
+                    var $lineArrow = $('<div class="craft-line-end"></div>');
+                    if (endPos.x < startPos.x) {
+                        var rotateDeg = 180;
+                        var middleX = startX + 0.2
+                    } else {
+                        rotateDeg = 0;
+                        middleX = startX
+                    }
+                    $lineStart.css({
+                        'width': '4px',
+                        'height': 'calc(' + lineStartHeight + 'rem - 0px)',
+//                        'background-color': lineColor,
+                        'transform': 'translate3d(' + startX + 'rem,' + (startY + offsetHeight / 2) + 'rem,0)',
+                        'transform-origin': '0 2px'
+                    });
+                    $lineMiddle.css({
+                        'width': 'calc(' + lineMiddleWidth + 'rem + 0px)',
+                        'height': '4px',
+//                        'background-color': lineColor,
+                        'transform': 'translate3d(' + middleX + 'rem,' + middleY + 'rem,0) rotateZ(' + rotateDeg + 'deg)',
+                        'transform-origin': '0 2px'
+                    });
+                    $lineEnd.css({
+                        'width': '4px',
+                        'height': 'calc(' + lineEndHeight + 'rem - 4px)',
+//                        'background-color': lineColor,
+                        'transform': 'translate3d(' + endX + 'rem,' + (middleY) + 'rem,0)',
+                        'transform-origin': '0 2px'
+                    });
+                    $lineArrow.css({
+//                        'border-top-color': lineColor,
+                        'transform': 'translate3d(calc(' + endX + 'rem - 4px) , calc(' + endY + 'rem - 12px), 0px)',
+                        'transform-origin': '0px 2px 0px'
+                    });
+                    $lineStart.appendTo($canvas);
+                    $lineMiddle.appendTo($canvas);
+                    $lineEnd.appendTo($canvas);
+                    $lineArrow.appendTo($canvas);
+                    groupStart++;
+                }
+            }
+
+            function getLineMiddle($dom, $width, $color, $x, $y) {
+                $dom.css({
+                    'width': $width,
+                    'height': '4px',
+                    'background-color': $color,
+                    'transform': 'translate3d(' + $x + 'rem,' + $y + 'rem,0)',
+                    'transform-origin': '0 2px'
+                });
+            }
+
+            function drawGroupContent(start, craftLength, groupTitle) {
+                var $groupContent = $('<div class="craft-group-content"><div class="craft-group-title">' + groupTitle + '</div></div>');
+                var height = ((offsetHeight + nodeSpaceY) * craftLength + nodeSpaceY + 2);
+                var width = (offsetWidth + nodeSpaceX - 2);
+                var translateX = start.x - 1.5;
+                var translateY = start.y - appStartNodeY + 1;
+                $groupContent.css({
+                    height: height + 'rem',
+                    width: width + 'rem',
+                    transform: 'translate3d(' + translateX + 'rem,' + translateY + 'rem,0)'
+                });
+                $groupContent.appendTo($canvas);
+            }
+
+            function updateCanvas() {
+                $canvas.css({
+                    'transform': "scale(" + transformData.scale + ") translate3d(" + (startTranslateX + transformData.translateX / transformData.scale) + "px," + (startTranslateY + transformData.translateY / transformData.scale) + "px,0px)"
+                });
+            }
+
+
+            return {
+                init: function (craftMapData) {
+                    init(craftMapData);
+                }
+            }
+        }));
+
+        setTimeout(function () {
+            flowMap.init(craftData);
+        }, 0);
+    </script>
+</div>
+</body>
+</html>

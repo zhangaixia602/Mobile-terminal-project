@@ -1,7 +1,5 @@
 <template>
-  <div>
-      <div id="map"></div>
-  </div>
+ <div id="map"></div>
 </template>
 <script>
 // 引入 ECharts 主模块
@@ -626,12 +624,11 @@ import 'echarts/lib/component/geo';
                             hideTip=false;
                            getMap(record1);
                        },tipTimer);
-                    }
-
+                   }
 
                     //每隔一段时间重新刷新整个界面界面
-                   setInterval( getData,wholeTime)
-   }}
+                    setInterval( getData,wholeTime)
+      }}
 </script>
 <style   scoped>
 #map{
