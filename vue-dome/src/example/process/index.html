@@ -48,6 +48,14 @@
                 color: white;
             }
 
+            .point>span{
+              display: inline-block;
+              width: 100%;
+              position: absolute;
+              top:50%;
+              left:50%;
+              transform: translateX(-50%) translateY(-50%);
+            }
             .danger {
                 background: red;
                 box-shadow: 0 0 40px 5px red;
@@ -128,23 +136,31 @@
             var pointName = "";
             var businessData = pointData.data;
             if (businessData) {
-                pointName = Math.max(businessData.deviceFirst, businessData.deviceSecond);
+//                pointName = Math.max(businessData.deviceFirst, businessData.deviceSecond);
+                  pointName = businessData.stationType;//显示工位类型名称
             }
-            $('<div id="' + pointID + '" class="point">' + (pointName || "") + '</div>').css({
+            $('<div id="' + pointID + '" class="point"><span>' + (pointName || "") + '</span></div>').css({
                 left: pointData.x + (60 - pointSize) / 2 + 'px',
                 top: pointData.y + (60 - pointSize) / 2 + 'px',
                 width: pointSize + 'px',
                 height: pointSize + 'px',
-                lineHeight: pointSize + 'px'
+                //lineHeight: pointSize + 'px'
             }).appendTo('#pic');
         }
 
         function bindAbnormalPoint(abnormalArray) {
             // 清除掉所有的异常点
             $('.' + abnormalClass).attr('class', 'point');
-            $.each(abnormalArray, function (index, value) {
-                var abnormalID = value.id;
-                var abnormalType = value.type;
+            $.each(abnormalArray, function (index, item) {
+              var abnormalID;
+              var abnormalStationCenter = item.stationCenter;
+              var abnormalStationName = item.stationName;
+              $.each(processData,function(key,value){
+                if(value.stationName==abnormalStationName && value.stationCenter==abnormalStationCenter){
+                  abnormalID= value.id;
+                }
+              });
+                var abnormalType = item.type;
                 var tempAbnormalClass = abnormalTypeConfig[abnormalType];
                 $('#' + abnormalID).addClass(abnormalClass + ' ' + tempAbnormalClass);
             })
@@ -162,8 +178,10 @@
                     if(data.Result==="OK"){
                         var tempAbnormalArray = [];
                         (data.Records).forEach(function(item,index){
-                            var tempAbnormalID = item.station,tempAbnormalClass;
-                            switch(item.lineState)
+                          var tempAbnormalID = item.wkstcd,tempAbnormalClass;
+                          var tempAbnormalStationCenter=item.wkcnnm,
+                            tempAbnormalStationName=item.wkstnm;
+                            switch(item.linesState)
                             {
                                 case 'blocking':
                                    tempAbnormalClass ="danger";
@@ -177,7 +195,9 @@
                             if ($.inArray(tempAbnormalArray, tempAbnormalID) === -1) {
                                 tempAbnormalArray.push({
                                     id: tempAbnormalID,
-                                    type: tempAbnormalClass
+                                    type: tempAbnormalClass,
+                                    stationName:tempAbnormalStationName,
+                                    stationCenter:tempAbnormalStationCenter
                                 })
                             }
                         });
@@ -190,7 +210,7 @@
                     console.log(data.message);
                 }
             });
-        }, 100);
+        }, 1000);
 
     </script>
 </html>

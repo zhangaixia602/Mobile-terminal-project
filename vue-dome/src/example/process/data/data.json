@@ -1,9 +1,48 @@
 {
   "Result": "OK",
   "Records":[
-    {"factory":"1000300","lineState":"blocking","station":"ID1","section":"1000413","workCenter":"1000300"},
-    {"factory":"1000300","lineState":"open","station":"ID5","section":"1000413","workCenter":"1000300"},
-    {"factory":"1000300","lineState":"congestion","station":"ID4","section":"1000413","workCenter":"1000300"}
-  ],
+    {
+      "linesState": "blocking",
+      "wstynm": "上衣缝制-大部件上吊挂",
+      "wkstcd": "YG001",
+      "wkcnnm": "上衣缝制一线",
+      "wkstnm": "S1"
+    }, {
+      "linesState": "blocking",
+      "wstynm": "上衣缝制-小部件上吊挂",
+      "wkstcd": "YG002",
+      "wkcnnm": "上衣缝制一线",
+      "wkstnm": "S2"
+    }, {
+      "linesState": "blocking",
+      "wstynm": "显示工艺/当前尺码 主界面",
+      "wkstcd": "YG003",
+      "wkcnnm": "上衣缝制一线",
+      "wkstnm": "H1"
+    }, {
+      "linesState": "blocking",
+      "wstynm": "显示工艺/当前尺码 主界面",
+      "wkstcd": "YG011",
+      "wkcnnm": "上衣缝制一线",
+      "wkstnm": "LN1B"
+    }, {
+      "linesState": "congestion",
+      "wstynm": "中段抽检",
+      "wkstcd": "YG027",
+      "wkcnnm": "上衣缝制一线",
+      "wkstnm": "X15J(QC)"
+    }, {
+      "linesState": "congestion",
+      "wstynm": "显示工艺/当前尺码 主界面",
+      "wkstcd": "YG065",
+      "wkcnnm": "上衣缝制一线",
+      "wkstnm": "Z1"
+    }, {
+      "linesState": "open",
+      "wstynm": "半成品质检",
+      "wkstcd": "YG122",
+      "wkcnnm": "上衣缝制一线",
+      "wkstnm": "Z58J(QC)"
+    }],
   "message":"保存失败!"
 }

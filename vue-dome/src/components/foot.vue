@@ -10,7 +10,6 @@
    import menuData from '../menuData'
    export default{
      name:'Foot',
-     props:['current'],
      data(){
         return {
           menuData:menuData
