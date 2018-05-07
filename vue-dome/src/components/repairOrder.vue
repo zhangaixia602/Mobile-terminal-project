@@ -1,7 +1,7 @@
 <template>
   <div class='main'>
   <Header firstIcon='arrow-left' title='工单' lastIcon='' backUrl='/'></Header>
-    <section class="stage" ref="stage">
+    <section class="stage body" ref="stage">
            <section class="img-sec">
              <ImgFigure v-for='(item ,index) in imagesData'
               :imageUrl='item.imageUrl'

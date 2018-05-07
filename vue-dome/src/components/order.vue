@@ -1,13 +1,15 @@
 <template>
   <div class='main'>
       <Header firstIcon='arrow-left' title='订单' lastIcon='' backUrl='/'></Header>
-      <ul>
-          <router-link to="/order/" tag='li'>生产中</router-link>
-          <router-link to="/order/newOrders" tag='li'>新订单</router-link>
-          <router-link to="/order/hasEnded" tag='li'>已结束</router-link>
-      </ul>
-      <div class='container'>
-          <router-view/>
+      <div class='body'>
+        <ul>
+            <router-link to="/order/" tag='li'>生产中</router-link>
+            <router-link to="/order/newOrders" tag='li'>新订单</router-link>
+            <router-link to="/order/hasEnded" tag='li'>已结束</router-link>
+        </ul>
+        <div class='container'>
+            <router-view/>
+        </div>
       </div>
   </div>
 </template>

@@ -102,7 +102,7 @@
 #box {
     position: relative;
     width: 100%;
-    height: 26.2rem;
+
    }
    #box .list {
     position: relative;
