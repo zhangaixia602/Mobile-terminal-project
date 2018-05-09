@@ -13,11 +13,11 @@ import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/legend';
 import 'echarts/lib/component/title';
 import 'echarts/lib/component/geo';
+let allTimer,countTime;
    export default {
      name: 'HasEnded',
      mounted(){
-            var allTimer,tip,
-                            wholeTime=8000;//刷新界面的时间
+            var tip,wholeTime=8000;//刷新界面的时间
                     getData();
                     function getData(){
                         var timer=2000,//有订单的时间
@@ -418,7 +418,7 @@ import 'echarts/lib/component/geo';
                             "amount":"9",
                             "from":"美国"
                         };
-                        clearInterval(allTimer);//清除定时器
+                       clearInterval(allTimer);//清除定时器
                        echarts.dispose(document.getElementById('map'));//销毁图表实例
                         getMap(record);
                         function getMap(data){
@@ -627,8 +627,13 @@ import 'echarts/lib/component/geo';
                    }
 
                     //每隔一段时间重新刷新整个界面界面
-                    setInterval( getData,wholeTime)
-      }}
+                    countTime=setInterval( getData,wholeTime)
+      },
+      destroyed(){
+            clearInterval(countTime);//清除定时器
+            clearInterval(allTimer);//清除定时器
+      }
+   }
 </script>
 <style   scoped>
 #map{
