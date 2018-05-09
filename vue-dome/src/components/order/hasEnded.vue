@@ -13,17 +13,16 @@ import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/legend';
 import 'echarts/lib/component/title';
 import 'echarts/lib/component/geo';
-let allTimer,countTime;
+let allTimer,tip,countTime, order;
    export default {
      name: 'HasEnded',
      mounted(){
-            var tip,wholeTime=8000;//刷新界面的时间
+            var wholeTime=8000;//刷新界面的时间
                     getData();
                     function getData(){
                         var timer=2000,//有订单的时间
                                 Timer=3000,//发货的时间
                                 tipTimer=5500;//隐藏弹出框的时间
-                        var order;
                         var hideTip=true;//控制弹出框的开关
                         var record={
                             "coordinates": {
@@ -632,6 +631,8 @@ let allTimer,countTime;
       destroyed(){
             clearInterval(countTime);//清除定时器
             clearInterval(allTimer);//清除定时器
+            clearInterval(tip);
+            clearInterval(order);
       }
    }
 </script>
